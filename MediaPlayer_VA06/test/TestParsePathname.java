@@ -51,9 +51,8 @@ public class TestParsePathname {
 				+ "Falco - Rock Me Amadeus.mp3";
 		String expectedFilename = "Falco - Rock Me Amadeus.mp3";
 		
-		
 		AudioFile af = new AudioFile();
-
+		af.parsePathname(pathname);
 		assertEquals("Pathname not correct!", 
 				expectedPathname,
 				af.getPathname());

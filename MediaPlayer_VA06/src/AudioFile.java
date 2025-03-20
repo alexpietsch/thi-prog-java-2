@@ -1,8 +1,8 @@
 import java.util.regex.Pattern;
 
 public class AudioFile {
-	private String path;
-	private String filename;
+	private String path = "";
+	private String filename = "";
 	
 	private char osSeparator;
 	
@@ -24,7 +24,7 @@ public class AudioFile {
 	}
 	
 	public String getFilename() {
-		return "";
+		return this.filename;
 	}
 	
 	public void setPathname(String path) {
@@ -89,7 +89,8 @@ public class AudioFile {
 					lastSepIdx = i;
 				}
 			}
-			this.setFilename(workingPath.substring(lastSepIdx));
+			System.out.println(workingPath.substring(lastSepIdx + 1));
+			this.setFilename(workingPath.substring(lastSepIdx + 1));
 		} else {
 			this.setFilename(workingPath);
 		}
