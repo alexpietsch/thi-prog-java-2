@@ -197,6 +197,7 @@ public class TestParsePathname {
 		
 		AudioFile af = new AudioFile();
 		af.parsePathname(pathname);
+
 		assertEquals("Pathname not correct!", 
 				expectedPathname,
 				af.getPathname());

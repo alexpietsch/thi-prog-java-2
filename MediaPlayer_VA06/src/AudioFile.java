@@ -1,26 +1,20 @@
-import java.util.regex.Pattern;
-
 public class AudioFile {
-	private String path = "";
-	private String filename = "";
-	
-	private char osSeparator;
+	private String pathname;
+	private String filename;
+	private char osSeparator = this.isWindows()
+	? '\\'
+	: '/';
 	
 	public AudioFile() {
-		osSeparator = isWindows()
-				? '\\'
-				: '/';
+
 	}	
 	
-	public AudioFile(String p) {
-		osSeparator = isWindows()
-				? '\\'
-				: '/';
-		p.charAt(0);
+	public AudioFile(String path) {
+		this.parsePathname(path);
 	}
 	
 	public String getPathname() {
-		return this.path;
+		return this.pathname;
 	}
 	
 	public String getFilename() {
@@ -28,7 +22,7 @@ public class AudioFile {
 	}
 	
 	public void setPathname(String path) {
-		this.path = path;
+		this.pathname = path;
 	}
 	
 	public void setFilename(String filename) {
@@ -39,8 +33,9 @@ public class AudioFile {
 		String drive = "";
 		String workingPath = path.strip();
 		
-		if(workingPath.length() < 1) {
-			path = "";
+		if(workingPath.length() == 0) {
+			this.setPathname(workingPath);
+			this.setFilename(workingPath);
 			return;
 		}
 		
@@ -89,15 +84,10 @@ public class AudioFile {
 					lastSepIdx = i;
 				}
 			}
-			System.out.println(workingPath.substring(lastSepIdx + 1));
 			this.setFilename(workingPath.substring(lastSepIdx + 1));
 		} else {
 			this.setFilename(workingPath);
 		}
-	}
-	
-	public void parseFilename(String p) {
-		
 	}
 	
 	private boolean isWindows() {
