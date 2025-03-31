@@ -1,4 +1,3 @@
-import java.io.File;
 
 public abstract class AudioFile {
 	public abstract void play();
@@ -6,7 +5,7 @@ public abstract class AudioFile {
 	public abstract void stop();
 	public abstract String formatDuration();
 	public abstract String formatPosition();
-	
+
 	private String pathname;
 	private String filename;
 	protected String title;
@@ -18,14 +17,10 @@ public abstract class AudioFile {
 	
 	public AudioFile() {
 
-	}	
+	}
 	
 	public AudioFile(String path) {
 		this.parsePathname(path);
-		File file = new File(this.getPathname());
-		if(!file.canRead()) {
-			throw new RuntimeException("Cannot read file!");
-		}
 		this.parseFilename(this.getFilename());
 	}
 	
@@ -45,29 +40,13 @@ public abstract class AudioFile {
 		return this.author;
 	}
 	
-	public void setPathname(String path) {
-		this.pathname = path;
-	}
-	
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-	
-	public void setTitle(String title) {
-		this.title = title; 
-	}
-	
-	public void setAuthor(String author) {
-		this.author = author; 
-	}
-	
 	public void parsePathname(String path) {
 		String drive = "";
 		String workingPath = path.strip();
 		
 		if(workingPath.length() == 0) {
-			this.setPathname(workingPath);
-			this.setFilename(workingPath);
+			this.pathname = workingPath;
+			this.filename = workingPath;
 			return;
 		}
 		
@@ -107,7 +86,7 @@ public abstract class AudioFile {
 		}
 		workingPath = workingStringBuilder.toString();
 		
-		this.setPathname(workingPath);
+		this.pathname = workingPath;
 		
 		if(workingPath.contains(String.valueOf(osSeparator))) {
 			int lastSepIdx = 0;
@@ -116,9 +95,9 @@ public abstract class AudioFile {
 					lastSepIdx = i;
 				}
 			}
-			this.setFilename(workingPath.substring(lastSepIdx + 1));
+			this.filename = workingPath.substring(lastSepIdx + 1).strip();
 		} else {
-			this.setFilename(workingPath);
+			this.filename = workingPath.strip();
 		}
 	}
 	
@@ -132,36 +111,36 @@ public abstract class AudioFile {
 			if(chars[i] == '.' && endungIdx == chars.length ) {
 				endungIdx = i;
 			}
-			if((
-					i > 0 && i < chars.length) &&
+			if(
+					(i > 0 && i < chars.length) &&
 					chars[i] == '-' && chars[i-1] == ' ' && chars[i+1] == ' '
 			) {
 				sepIdx = i;
 			}
 		}
 		
-		String cleanFileName = filename.substring(0,endungIdx).strip();
+		String cleanFileName = filename.substring(0, endungIdx).replace('\u00A0',' ').trim();
 		
 		if(sepIdx == -1) {
 			if(cleanFileName.length() == 0) {
-				this.setAuthor("");
-				this.setTitle("");
+				this.author = "";
+				this.title = "";
 			}
 			if(cleanFileName.length() > 0) {
-				this.setAuthor("");
-				this.setTitle(cleanFileName.strip());
+				this.author = "";
+				this.title = cleanFileName.strip();
 			}
 			return;
 		}
 		if(cleanFileName.equals("-")) {
-			this.setAuthor("");
-			this.setTitle("");
+			this.author = "";
+			this.title = "";
 			return;
 		}
 		String authorSubstr = cleanFileName.substring(0,sepIdx).strip();
 		String titleSubstr = cleanFileName.substring(sepIdx + 1).strip();
-		this.setAuthor(authorSubstr);
-		this.setTitle(titleSubstr);
+		this.author = authorSubstr;
+		this.title = titleSubstr;
 	}
 	
 	@Override

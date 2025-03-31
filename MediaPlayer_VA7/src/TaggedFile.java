@@ -32,11 +32,11 @@ public class TaggedFile extends SampledFile {
 	
 		
 		if(titleTag != null) {
-			this.setTitle(titleTag.toString().strip());
+			this.title = titleTag.toString().strip();
 		}
 		
 		if(authorTag != null) {
-			this.setAuthor(authorTag.toString().strip());
+			this.author = authorTag.toString().strip();
 		}
 		
 		if(albumTag != null) {

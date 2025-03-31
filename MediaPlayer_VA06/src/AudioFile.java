@@ -33,25 +33,13 @@ public class AudioFile {
 		return this.author;
 	}
 	
-	public void setFilename(String filename) {
-		this.filename = filename;
-	}
-	
-	public void setTitle(String title) {
-		this.title = title; 
-	}
-	
-	public void setAuthor(String author) {
-		this.author = author; 
-	}
-	
 	public void parsePathname(String path) {
 		String drive = "";
 		String workingPath = path.strip();
 		
 		if(workingPath.length() == 0) {
 			this.pathname = workingPath;
-			this.setFilename(workingPath);
+			this.filename = workingPath;
 			return;
 		}
 		
@@ -100,14 +88,14 @@ public class AudioFile {
 					lastSepIdx = i;
 				}
 			}
-			this.setFilename(workingPath.substring(lastSepIdx + 1));
+			this.filename = workingPath.substring(lastSepIdx + 1).strip();
 		} else {
-			this.setFilename(workingPath);
+			this.filename = workingPath.strip();
 		}
 	}
 	
-	public void parseFilename(String filename) {
-		char[] chars = filename.toCharArray();
+	public void parseFilename(String filenameToParse) {
+		char[] chars = filenameToParse.toCharArray();
 		int endungIdx = chars.length;
 		int sepIdx = -1;
 		for(int i = chars.length-1; i >= 0; i--) {
@@ -124,28 +112,28 @@ public class AudioFile {
 			}
 		}
 		
-		String cleanFileName = filename.substring(0, endungIdx).replace('\u00A0',' ').trim();
+		String cleanFileName = filenameToParse.substring(0, endungIdx).replace('\u00A0',' ').trim();
 		
 		if(sepIdx == -1) {
 			if(cleanFileName.length() == 0) {
-				this.setAuthor("");
-				this.setTitle("");
+				this.author = "";
+				this.title = "";
 			}
 			if(cleanFileName.length() > 0) {
-				this.setAuthor("");
-				this.setTitle(cleanFileName.strip());
+				this.author = "";
+				this.title = cleanFileName.strip();
 			}
 			return;
 		}
 		if(cleanFileName.equals("-")) {
-			this.setAuthor("");
-			this.setTitle("");
+			this.author = "";
+			this.title = "";
 			return;
 		}
 		String authorSubstr = cleanFileName.substring(0,sepIdx).strip();
 		String titleSubstr = cleanFileName.substring(sepIdx + 1).strip();
-		this.setAuthor(authorSubstr);
-		this.setTitle(titleSubstr);
+		this.author = authorSubstr;
+		this.title = titleSubstr;
 	}
 	
 	@Override

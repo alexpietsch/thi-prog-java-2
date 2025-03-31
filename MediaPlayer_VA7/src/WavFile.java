@@ -4,7 +4,7 @@ public class WavFile extends SampledFile {
 	public WavFile() {
 		super();
 		this.readAndSetDurationFromFile();
-		this.setTitle(this.getFilename());
+		this.title = this.getFilename();
 	}
 	
 	public WavFile(String path) {
