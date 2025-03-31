@@ -4,6 +4,7 @@ public class WavFile extends SampledFile {
 	public WavFile() {
 		super();
 		this.readAndSetDurationFromFile();
+		this.setTitle(this.getFilename());
 	}
 	
 	public WavFile(String path) {
@@ -25,8 +26,9 @@ public class WavFile extends SampledFile {
 		this.setDuration(duration);
 	}
 	
+	@Override
 	public String toString() {
-		return null;
+		return String.format("%s - %s", super.toString(), this.formatDuration());
 	}
 	
 	public static long computeDuration(long numberOfFrames, float frameRate) {

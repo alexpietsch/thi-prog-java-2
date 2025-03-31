@@ -1,6 +1,6 @@
 import java.io.File;
 
-public abstract class AudioFile {
+public abstract class AudioFileBAK {
 	public abstract void play();
 	public abstract void togglePause();
 	public abstract void stop();
@@ -11,22 +11,20 @@ public abstract class AudioFile {
 	private String filename;
 	protected String title;
 	protected String author;
-	
 	private char osSeparator = this.isWindows()
 	? '\\'
 	: '/';
 	
-	public AudioFile() {
-
+	public AudioFileBAK() {
+		this("");
 	}	
 	
-	public AudioFile(String path) {
+	public AudioFileBAK(String path) {
 		this.parsePathname(path);
 		File file = new File(this.getPathname());
 		if(!file.canRead()) {
 			throw new RuntimeException("Cannot read file!");
 		}
-		this.parseFilename(this.getFilename());
 	}
 	
 	public String getPathname() {
@@ -123,58 +121,16 @@ public abstract class AudioFile {
 	}
 	
 	public void parseFilename(String filename) {
-		char[] chars = filename.toCharArray();
-		int endungIdx = chars.length;
-		int sepIdx = -1;
-		for(int i = chars.length-1; i >= 0; i--) {
-			// from string end, check for '.' and check for current
-			// idx, to only set it once
-			if(chars[i] == '.' && endungIdx == chars.length ) {
-				endungIdx = i;
-			}
-			if((
-					i > 0 && i < chars.length) &&
-					chars[i] == '-' && chars[i-1] == ' ' && chars[i+1] == ' '
-			) {
-				sepIdx = i;
-			}
-		}
 		
-		String cleanFileName = filename.substring(0,endungIdx).strip();
-		
-		if(sepIdx == -1) {
-			if(cleanFileName.length() == 0) {
-				this.setAuthor("");
-				this.setTitle("");
-			}
-			if(cleanFileName.length() > 0) {
-				this.setAuthor("");
-				this.setTitle(cleanFileName.strip());
-			}
-			return;
-		}
-		if(cleanFileName.equals("-")) {
-			this.setAuthor("");
-			this.setTitle("");
-			return;
-		}
-		String authorSubstr = cleanFileName.substring(0,sepIdx).strip();
-		String titleSubstr = cleanFileName.substring(sepIdx + 1).strip();
-		this.setAuthor(authorSubstr);
-		this.setTitle(titleSubstr);
-	}
-	
-	@Override
-	public String toString() {
-		if(this.getAuthor().length() < 1) {
-			return this.getTitle();
-		}
-		
-		return String.format("%s - %s", this.getAuthor(), this.getTitle());
 	}
 	
 	private boolean isWindows() {
 		return System.getProperty("os.name").toLowerCase()
 		.indexOf("win") >= 0;
 	}
+	
+	public String toString() {
+		return null;
+	}
+	
 }

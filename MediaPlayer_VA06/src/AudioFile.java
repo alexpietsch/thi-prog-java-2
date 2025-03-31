@@ -1,16 +1,20 @@
 public class AudioFile {
 	private String pathname;
 	private String filename;
+	protected String title;
+	protected String author;
+	
 	private char osSeparator = this.isWindows()
 	? '\\'
 	: '/';
 	
 	public AudioFile() {
 
-	}	
+	}
 	
 	public AudioFile(String path) {
 		this.parsePathname(path);
+		this.parseFilename(this.getFilename());
 	}
 	
 	public String getPathname() {
@@ -21,12 +25,24 @@ public class AudioFile {
 		return this.filename;
 	}
 	
-	public void setPathname(String path) {
-		this.pathname = path;
+	public String getTitle() {
+		return this.title;
+	}
+	
+	public String getAuthor() {
+		return this.author;
 	}
 	
 	public void setFilename(String filename) {
 		this.filename = filename;
+	}
+	
+	public void setTitle(String title) {
+		this.title = title; 
+	}
+	
+	public void setAuthor(String author) {
+		this.author = author; 
 	}
 	
 	public void parsePathname(String path) {
@@ -34,7 +50,7 @@ public class AudioFile {
 		String workingPath = path.strip();
 		
 		if(workingPath.length() == 0) {
-			this.setPathname(workingPath);
+			this.pathname = workingPath;
 			this.setFilename(workingPath);
 			return;
 		}
@@ -75,7 +91,7 @@ public class AudioFile {
 		}
 		workingPath = workingStringBuilder.toString();
 		
-		this.setPathname(workingPath);
+		this.pathname = workingPath;
 		
 		if(workingPath.contains(String.valueOf(osSeparator))) {
 			int lastSepIdx = 0;
@@ -88,6 +104,57 @@ public class AudioFile {
 		} else {
 			this.setFilename(workingPath);
 		}
+	}
+	
+	public void parseFilename(String filename) {
+		char[] chars = filename.toCharArray();
+		int endungIdx = chars.length;
+		int sepIdx = -1;
+		for(int i = chars.length-1; i >= 0; i--) {
+			// from string end, check for '.' and check for current
+			// idx, to only set it once
+			if(chars[i] == '.' && endungIdx == chars.length ) {
+				endungIdx = i;
+			}
+			if(
+					(i > 0 && i < chars.length) &&
+					chars[i] == '-' && chars[i-1] == ' ' && chars[i+1] == ' '
+			) {
+				sepIdx = i;
+			}
+		}
+		
+		String cleanFileName = filename.substring(0, endungIdx).replace('\u00A0',' ').trim();
+		
+		if(sepIdx == -1) {
+			if(cleanFileName.length() == 0) {
+				this.setAuthor("");
+				this.setTitle("");
+			}
+			if(cleanFileName.length() > 0) {
+				this.setAuthor("");
+				this.setTitle(cleanFileName.strip());
+			}
+			return;
+		}
+		if(cleanFileName.equals("-")) {
+			this.setAuthor("");
+			this.setTitle("");
+			return;
+		}
+		String authorSubstr = cleanFileName.substring(0,sepIdx).strip();
+		String titleSubstr = cleanFileName.substring(sepIdx + 1).strip();
+		this.setAuthor(authorSubstr);
+		this.setTitle(titleSubstr);
+	}
+	
+	@Override
+	public String toString() {
+		if(this.getAuthor().length() < 1) {
+			return this.getTitle();
+		}
+		
+		return String.format("%s - %s", this.getAuthor(), this.getTitle());
 	}
 	
 	private boolean isWindows() {

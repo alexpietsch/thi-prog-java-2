@@ -49,8 +49,12 @@ public class TaggedFile extends SampledFile {
 		}
 	}
 	
+	@Override
 	public String toString() {
-		return null;
+		if(this.getAlbum() != null) {
+			return String.format("%s - %s - %s", super.toString(), this.getAlbum(), this.formatDuration());
+		}
+		return String.format("%s - %s", super.toString(), this.formatDuration());
 	}
 
 }
