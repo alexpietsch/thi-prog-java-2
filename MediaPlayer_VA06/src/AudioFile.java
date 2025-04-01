@@ -1,46 +1,45 @@
-import java.util.regex.Pattern;
-
 public class AudioFile {
-	private String path = "";
-	private String filename = "";
+	private String pathname;
+	private String filename;
+	protected String title;
+	protected String author;
 	
-	private char osSeparator;
+	private char osSeparator = this.isWindows()
+	? '\\'
+	: '/';
 	
 	public AudioFile() {
-		osSeparator = isWindows()
-				? '\\'
-				: '/';
-	}	
+
+	}
 	
-	public AudioFile(String p) {
-		osSeparator = isWindows()
-				? '\\'
-				: '/';
-		p.charAt(0);
+	public AudioFile(String path) {
+		this.parsePathname(path);
+		this.parseFilename(this.getFilename());
 	}
 	
 	public String getPathname() {
-		return this.path;
+		return this.pathname;
 	}
 	
 	public String getFilename() {
 		return this.filename;
 	}
 	
-	public void setPathname(String path) {
-		this.path = path;
+	public String getTitle() {
+		return this.title;
 	}
 	
-	public void setFilename(String filename) {
-		this.filename = filename;
+	public String getAuthor() {
+		return this.author;
 	}
 	
 	public void parsePathname(String path) {
 		String drive = "";
 		String workingPath = path.strip();
 		
-		if(workingPath.length() < 1) {
-			path = "";
+		if(workingPath.length() == 0) {
+			this.pathname = workingPath;
+			this.filename = workingPath;
 			return;
 		}
 		
@@ -80,7 +79,7 @@ public class AudioFile {
 		}
 		workingPath = workingStringBuilder.toString();
 		
-		this.setPathname(workingPath);
+		this.pathname = workingPath;
 		
 		if(workingPath.contains(String.valueOf(osSeparator))) {
 			int lastSepIdx = 0;
@@ -89,15 +88,61 @@ public class AudioFile {
 					lastSepIdx = i;
 				}
 			}
-			System.out.println(workingPath.substring(lastSepIdx + 1));
-			this.setFilename(workingPath.substring(lastSepIdx + 1));
+			this.filename = workingPath.substring(lastSepIdx + 1).strip();
 		} else {
-			this.setFilename(workingPath);
+			this.filename = workingPath.strip();
 		}
 	}
 	
-	public void parseFilename(String p) {
+	public void parseFilename(String filenameToParse) {
+		char[] chars = filenameToParse.toCharArray();
+		int endungIdx = chars.length;
+		int sepIdx = -1;
+		for(int i = chars.length-1; i >= 0; i--) {
+			// from string end, check for '.' and check for current
+			// idx, to only set it once
+			if(chars[i] == '.' && endungIdx == chars.length ) {
+				endungIdx = i;
+			}
+			if(
+					(i > 0 && i < chars.length) &&
+					chars[i] == '-' && chars[i-1] == ' ' && chars[i+1] == ' '
+			) {
+				sepIdx = i;
+			}
+		}
 		
+		String cleanFileName = filenameToParse.substring(0, endungIdx).replace('\u00A0',' ').trim();
+		
+		if(sepIdx == -1) {
+			if(cleanFileName.length() == 0) {
+				this.author = "";
+				this.title = "";
+			}
+			if(cleanFileName.length() > 0) {
+				this.author = "";
+				this.title = cleanFileName.strip();
+			}
+			return;
+		}
+		if(cleanFileName.equals("-")) {
+			this.author = "";
+			this.title = "";
+			return;
+		}
+		String authorSubstr = cleanFileName.substring(0,sepIdx).strip();
+		String titleSubstr = cleanFileName.substring(sepIdx + 1).strip();
+		this.author = authorSubstr;
+		this.title = titleSubstr;
+	}
+	
+	@Override
+	public String toString() {
+		if(this.getAuthor().length() < 1) {
+			return this.getTitle();
+		}
+		
+		return String.format("%s - %s", this.getAuthor(), this.getTitle());
 	}
 	
 	private boolean isWindows() {
