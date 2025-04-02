@@ -114,8 +114,12 @@ public class PlayList {
 		}
 		
 		for(String audioFilePath : filePaths) {
-			AudioFile audioFile = AudioFileFactory.createAudioFile(audioFilePath);
-			this.audioFiles.add(audioFile);
+			try {
+				AudioFile audioFile = AudioFileFactory.createAudioFile(audioFilePath);
+				this.audioFiles.add(audioFile);
+			} catch (Exception e) {
+				System.err.println("Could not add file: " + e.getMessage());
+			}
 		}
 	}
 }
