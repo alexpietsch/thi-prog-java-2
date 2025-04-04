@@ -27,7 +27,7 @@ public class TaggedFile extends SampledFile {
 	public void readAndStoreTags() throws NotPlayableException {
 		Map<String, Object> tagMap = Map.of();
 		try {
-			TagReader.readTags(this.getPathname());
+			tagMap = TagReader.readTags(this.getPathname());
 		} catch (Exception e) {
 			throw new NotPlayableException(this.getPathname(), "Could not get tags.", e);
 		}

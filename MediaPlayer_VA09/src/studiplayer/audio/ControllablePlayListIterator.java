@@ -14,6 +14,61 @@ public class ControllablePlayListIterator implements Iterator<AudioFile> {
 		}
 	}
 	
+	public ControllablePlayListIterator(List<AudioFile> pAudioFiles, SortCriterion pSortCriterion, String pSearch) {
+		List<AudioFile> audioFiles = pAudioFiles;
+		
+		
+		
+		if(pSearch == null || pSearch.isEmpty()) {
+			for(AudioFile file : pAudioFiles) {
+				audioFiles.add(file);
+//				pSortCriterion = SortCriterion.DEFAULT;
+			}
+		}
+		
+		if(pSearch != null && pSearch.length() > 0) {
+			for(AudioFile file : audioFiles) {
+				if(file instanceof TaggedFile) {
+					if( ((TaggedFile) file).getAlbum().contains(pSearch) ) {
+						audioFiles.add(file);
+//						pSortCriterion = SortCriterion.ALBUM;
+					}
+				}
+				
+				if(file.getAuthor().contains(pSearch)) {
+					audioFiles.add(file);
+//					pSortCriterion = SortCriterion.AUTHOR;
+				}
+						
+				if( file.getTitle().contains(pSearch)) {
+					audioFiles.add(file);
+//					pSortCriterion = SortCriterion.TITLE;
+				}
+			}
+		}
+		switch (pSortCriterion) {
+		case ALBUM: {
+			audioFiles.sort(new AlbumComparator());
+			break;
+		}
+		case AUTHOR: {
+			audioFiles.sort(new AuthorComparator());
+			break;
+		}
+		case DURATION: {
+			audioFiles.sort(new DurationComparator());
+			break;
+		}
+		case TITLE: {
+			audioFiles.sort(new TitleComparator());
+			break;
+		}
+		default:
+			throw new IllegalArgumentException("Unexpected value: " + pSortCriterion);
+		}
+		
+	}
+	
 	public boolean hasNext() {
 		return playList.getCurrent() < playList.size();
 	}

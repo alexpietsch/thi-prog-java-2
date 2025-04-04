@@ -24,6 +24,7 @@ public abstract class AudioFile {
 	
 	public AudioFile(String path) throws NotPlayableException {
 		File file = new File(path);
+		AudioFile a = this;
 		
 		if(!file.canRead()) {
 			throw new NotPlayableException(path, "Cannot read file.");
@@ -154,7 +155,7 @@ public abstract class AudioFile {
 	
 	@Override
 	public String toString() {
-		if(this.getAuthor().length() < 1) {
+		if(this.getAuthor() != null && this.getAuthor().length() < 1) {
 			return this.getTitle();
 		}
 		

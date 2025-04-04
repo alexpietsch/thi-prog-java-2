@@ -3,13 +3,16 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Scanner;
 
-public class PlayList {
+public class PlayList implements Iterable<AudioFile> {
 	private LinkedList<AudioFile> audioFiles;
 	private int current;
+	private String search;
+	private SortCriterion sortCriterion = SortCriterion.DEFAULT;
 	
 	public PlayList() {
 		this.audioFiles = new LinkedList<AudioFile>();
@@ -31,6 +34,22 @@ public class PlayList {
 	
 	public int getCurrent() {
 		return this.current;
+	}
+	
+	public void setSearch(String pSearch) {
+		this.search = pSearch;
+	}
+	
+	public String getSearch() {
+		return this.search;
+	}
+	
+	public void setSortCriterion(SortCriterion pSortCriterion) {
+		this.sortCriterion = pSortCriterion;
+	}
+	
+	public SortCriterion getSortCriterion() {
+		return this.sortCriterion;
 	}
 	
 	public void add(AudioFile file) {
@@ -121,5 +140,10 @@ public class PlayList {
 				System.err.println("Could not add file: " + e.getMessage());
 			}
 		}
+	}
+	
+	@Override
+	public Iterator<AudioFile> iterator() {
+		return this.audioFiles.iterator();
 	}
 }
