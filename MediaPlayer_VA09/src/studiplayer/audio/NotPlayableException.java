@@ -18,4 +18,11 @@ public class NotPlayableException extends Exception {
 		super(msg, t);
 		this.filePathname = pathname;
 	}
+	
+	@Override
+	public String toString() {
+        String s = getClass().getName();
+        String message = getLocalizedMessage();
+        return (message != null) ? (s + "(Path: "+ filePathname + ": " + message) : s;
+    }
 }

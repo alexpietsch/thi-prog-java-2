@@ -6,86 +6,84 @@ import java.util.List;
 
 
 public class ControllablePlayListIterator implements Iterator<AudioFile> {
-	PlayList playList = new PlayList();
+	private List<AudioFile> audioFiles = new ArrayList<AudioFile>();
+	private int pos;
 
 	public ControllablePlayListIterator(List<AudioFile> audioFiles) {
-		for(AudioFile file : audioFiles) {
-			playList.add(file);
-		}
+		// for(AudioFile file : audioFiles) {
+		// 	audioFiles.add(file);
+		// }
+		this.audioFiles = new ArrayList<AudioFile>(audioFiles);
+		this.pos = 0;
 	}
 	
-	public ControllablePlayListIterator(List<AudioFile> pAudioFiles, SortCriterion pSortCriterion, String pSearch) {
-		List<AudioFile> audioFiles = pAudioFiles;
+	public ControllablePlayListIterator(List<AudioFile> pAudioFiles, String pSearch, SortCriterion pSortCriterion) {
+		List<AudioFile> tmpAudioFiles = new ArrayList<AudioFile>();
 		
-		
-		
-		if(pSearch == null || pSearch.isEmpty()) {
+		if(pSearch != null && !pSearch.isEmpty()) {
 			for(AudioFile file : pAudioFiles) {
-				audioFiles.add(file);
-//				pSortCriterion = SortCriterion.DEFAULT;
+				if(file != null && file.toString().contains(pSearch)) {
+					tmpAudioFiles.add(file);
+				}
 			}
+		} else {
+			tmpAudioFiles.addAll(pAudioFiles);
 		}
 		
-		if(pSearch != null && pSearch.length() > 0) {
-			for(AudioFile file : audioFiles) {
-				if(file instanceof TaggedFile) {
-					if( ((TaggedFile) file).getAlbum().contains(pSearch) ) {
-						audioFiles.add(file);
-//						pSortCriterion = SortCriterion.ALBUM;
-					}
-				}
-				
-				if(file.getAuthor().contains(pSearch)) {
-					audioFiles.add(file);
-//					pSortCriterion = SortCriterion.AUTHOR;
-				}
-						
-				if( file.getTitle().contains(pSearch)) {
-					audioFiles.add(file);
-//					pSortCriterion = SortCriterion.TITLE;
-				}
-			}
-		}
 		switch (pSortCriterion) {
-		case ALBUM: {
-			audioFiles.sort(new AlbumComparator());
-			break;
-		}
-		case AUTHOR: {
-			audioFiles.sort(new AuthorComparator());
-			break;
-		}
-		case DURATION: {
-			audioFiles.sort(new DurationComparator());
-			break;
-		}
-		case TITLE: {
-			audioFiles.sort(new TitleComparator());
-			break;
-		}
-		default:
-			throw new IllegalArgumentException("Unexpected value: " + pSortCriterion);
+			case ALBUM: {
+				tmpAudioFiles.sort(new AlbumComparator());
+				break;
+			}
+			case AUTHOR: {
+				tmpAudioFiles.sort(new AuthorComparator());
+				break;
+			}
+			case DURATION: {
+				tmpAudioFiles.sort(new DurationComparator());
+				break;
+			}
+			case TITLE: {
+				tmpAudioFiles.sort(new TitleComparator());
+				break;
+			}
+			case DEFAULT: {
+				break;
+			}
+			default: {
+				throw new IllegalArgumentException("Unexpected value: " + pSortCriterion);
+			}
 		}
 		
+		for(AudioFile file : tmpAudioFiles) {
+			this.audioFiles.add(file);
+		}
+		this.pos = 0;
 	}
 	
 	public boolean hasNext() {
-		return playList.getCurrent() < playList.size();
+		return this.pos < this.audioFiles.size();
+		// return playList.getCurrent() < playList.size();
 	}
 
 	public AudioFile next() {
-		AudioFile currentAudioFile = playList.currentAudioFile();
-		playList.setCurrent(playList.getCurrent() + 1);
+		if(this.audioFiles.size() < 1 || (pos + 1 > this.audioFiles.size())) {
+			return null;
+		}
+		if(!hasNext()) {
+			pos = 0;
+		}
+		AudioFile currentAudioFile = audioFiles.get(pos);
+		pos++;
 		return currentAudioFile;
 	}
 
 	public AudioFile jumpToAudioFile(AudioFile file) {
-		ArrayList<AudioFile> arrayList = new ArrayList<AudioFile>();
-		arrayList.addAll(playList.getList());
-		if(!arrayList.contains(file)) {
+		int targetIdx = audioFiles.indexOf(file);
+		if(targetIdx < 0) {
 			return null;
 		}
-		playList.setCurrent(arrayList.indexOf(file) +1 );
+		this.pos = targetIdx + 1; 
 		return file;
 	}
 	

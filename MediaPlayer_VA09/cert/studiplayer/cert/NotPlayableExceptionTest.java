@@ -20,6 +20,7 @@ public class NotPlayableExceptionTest {
             throw new NotPlayableException("abc-path", "def-msg");
         } catch (NotPlayableException e) {
             String ts = e.toString();
+            System.out.println(ts);
             assertTrue("toString von NotPlayableException ungenuegend", ts.contains("abc-path")
                     && ts.contains("studiplayer.audio.NotPlayableException")
                     && ts.contains("def-msg"));
@@ -28,6 +29,7 @@ public class NotPlayableExceptionTest {
             throw new NotPlayableException("abc-path", new RuntimeException("def-msg"));
         } catch (NotPlayableException e) {
             String ts = e.toString();
+            System.out.println(ts);
             assertTrue("toString von NotPlayableException ungenuegend", ts.contains("abc-path")
                     && ts.contains("studiplayer.audio.NotPlayableException")
                     && ts.contains("def-msg"));
@@ -37,6 +39,7 @@ public class NotPlayableExceptionTest {
                     "ghi"));
         } catch (NotPlayableException e) {
             String ts = e.toString();
+            System.out.println(ts);
             assertTrue("toString von NotPlayableException ungenuegend", ts.contains("abc-path")
                     && ts.contains("studiplayer.audio.NotPlayableException")
                     && ts.contains("def-msg"));

@@ -10,17 +10,20 @@ import java.util.Scanner;
 
 public class PlayList implements Iterable<AudioFile> {
 	private LinkedList<AudioFile> audioFiles;
-	private int current;
 	private String search;
 	private SortCriterion sortCriterion = SortCriterion.DEFAULT;
+	private ControllablePlayListIterator playlistIterator;
+	private AudioFile currentAudioFile = null;
 	
 	public PlayList() {
 		this.audioFiles = new LinkedList<AudioFile>();
-		this.current = 0;
+		this.playlistIterator = null;
+		this.currentAudioFile = null;
 	}
-	public PlayList(String m3uPathname) throws NotPlayableException {
+	public PlayList(String m3uPathname) {
 		this.audioFiles = new LinkedList<AudioFile>();
-		this.current = 0;
+		this.playlistIterator = null;
+		this.currentAudioFile = null;
 		this.loadFromM3U(m3uPathname);
 	}
 	
@@ -28,16 +31,22 @@ public class PlayList implements Iterable<AudioFile> {
 		return this.audioFiles;
 	}
 	
-	public void setCurrent(int idx) {
-		this.current = idx;
+	public Iterator<AudioFile> getIterator(){
+		return this.playlistIterator;
 	}
+
+	// public void setCurrent(int idx) {
+	// 	this.current = idx;
+	// }
 	
-	public int getCurrent() {
-		return this.current;
-	}
+	// public int getCurrent() {
+	// 	return this.current;
+	// }
 	
 	public void setSearch(String pSearch) {
 		this.search = pSearch;
+		this.playlistIterator = this.iterator();
+		this.currentAudioFile = this.playlistIterator.next();
 	}
 	
 	public String getSearch() {
@@ -46,6 +55,8 @@ public class PlayList implements Iterable<AudioFile> {
 	
 	public void setSortCriterion(SortCriterion pSortCriterion) {
 		this.sortCriterion = pSortCriterion;
+		this.playlistIterator = this.iterator();
+		this.currentAudioFile = this.playlistIterator.next();
 	}
 	
 	public SortCriterion getSortCriterion() {
@@ -54,10 +65,14 @@ public class PlayList implements Iterable<AudioFile> {
 	
 	public void add(AudioFile file) {
 		this.audioFiles.add(file);
+		this.playlistIterator = this.iterator();
+		this.currentAudioFile = this.playlistIterator.next();
 	}
 	
 	public void remove(AudioFile file) {
 		this.audioFiles.remove(file);
+		this.playlistIterator = this.iterator();
+		this.currentAudioFile = this.playlistIterator.next();
 	}
 	
 	public int size() {
@@ -65,25 +80,27 @@ public class PlayList implements Iterable<AudioFile> {
 	}
 	
 	public AudioFile currentAudioFile() {
-		AudioFile currentFile;
-		try {
-			currentFile = this.audioFiles.get(this.current);
-		} catch (IndexOutOfBoundsException e) {
-			System.err.println(String.format("Index %d out of bounds for audioFiles list", this.current));
-			return null;
-		}
-		return currentFile;
+		return this.currentAudioFile;
 	}
 	
 	public void nextSong() {
-		if(this.current >= this.audioFiles.size() || this.current < 0) {
-			this.current = 0;
+		if(this.playlistIterator == null ) {
+			this.playlistIterator = this.iterator();
+		}
+		if(this.audioFiles.size() == 0) {
+			this.currentAudioFile = null;
 			return;
 		}
-		this.current = this.current + 1 > this.audioFiles.size() - 1
-				? 0
-				: this.current + 1;
-		
+		if(this.playlistIterator.hasNext()) {
+			this.currentAudioFile = this.playlistIterator.next();
+		} else {
+				this.playlistIterator = this.iterator();
+			if (this.playlistIterator.hasNext()) {
+				this.currentAudioFile = this.playlistIterator.next();
+			} else {
+				this.currentAudioFile = null;
+			}
+		}
 	}
 	
 	public void saveAsM3U(String pathname) {
@@ -107,12 +124,11 @@ public class PlayList implements Iterable<AudioFile> {
 		}
 	}
 	
-	public void loadFromM3U(String path) throws NotPlayableException {
+	public void loadFromM3U(String path) {
 		List<String> filePaths = new ArrayList<>();
 		Scanner scanner = null;
 		
 		this.audioFiles.clear();
-		this.current = 0;
 		
 		try {
 			scanner = new Scanner(new File(path));	
@@ -140,10 +156,28 @@ public class PlayList implements Iterable<AudioFile> {
 				System.err.println("Could not add file: " + e.getMessage());
 			}
 		}
+
+		if(!this.audioFiles.isEmpty()) {
+			this.playlistIterator = this.iterator();
+			this.currentAudioFile = this.playlistIterator.next();
+		}
+	}
+
+	public AudioFile jumpToAudioFile(AudioFile file) {
+		if(!this.audioFiles.contains(file)) {
+			return null;
+		}
+		
+		if(this.playlistIterator == null ) {
+			this.playlistIterator = this.iterator();
+		}
+		
+		this.currentAudioFile = this.playlistIterator.jumpToAudioFile(file);
+		return file;
 	}
 	
 	@Override
-	public Iterator<AudioFile> iterator() {
-		return this.audioFiles.iterator();
+	public ControllablePlayListIterator iterator() {
+		return new ControllablePlayListIterator(this.audioFiles, this.search, this.sortCriterion);
 	}
 }

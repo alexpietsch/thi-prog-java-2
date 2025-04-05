@@ -20,13 +20,21 @@ public class AlbumComparator implements Comparator<AudioFile> {
 			return 1;
 		}
 
+		TaggedFile tfO1 = (TaggedFile) o1;
+		TaggedFile tfO2 = (TaggedFile) o2;
 		
-		if( ((TaggedFile) o1).getAlbum() == null & ((TaggedFile) o2).getAlbum() == null) {
-			throw new RuntimeException("One of the comparables album is null!");
+		
+		if (tfO1.getAlbum() == null && tfO2.getAlbum() == null) {
+			return 0;
+		}
+		if (tfO1.getAlbum() == null && tfO2.getAlbum() != null) {
+			return -1;
+		}
+		if (tfO1.getAlbum() != null && tfO2.getAlbum() == null) {
+			return 1;
 		}
 		
-		
-		return ((TaggedFile) o1).getAlbum().compareTo(((TaggedFile) o2).getAlbum());
+		return tfO1.getAlbum().compareTo(tfO2.getAlbum());
 
 	}
 
