@@ -1,0 +1,1 @@
+/Library/Java/JavaVirtualMachines/javafx-sdk-24/
