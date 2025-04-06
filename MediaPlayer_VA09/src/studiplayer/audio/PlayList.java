@@ -180,4 +180,9 @@ public class PlayList implements Iterable<AudioFile> {
 	public ControllablePlayListIterator iterator() {
 		return new ControllablePlayListIterator(this.audioFiles, this.search, this.sortCriterion);
 	}
+	
+	@Override
+	public String toString() {
+		return this.audioFiles.toString();
+	}
 }

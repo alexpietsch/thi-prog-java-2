@@ -10,9 +10,6 @@ public class ControllablePlayListIterator implements Iterator<AudioFile> {
 	private int pos;
 
 	public ControllablePlayListIterator(List<AudioFile> audioFiles) {
-		// for(AudioFile file : audioFiles) {
-		// 	audioFiles.add(file);
-		// }
 		this.audioFiles = new ArrayList<AudioFile>(audioFiles);
 		this.pos = 0;
 	}
@@ -63,7 +60,6 @@ public class ControllablePlayListIterator implements Iterator<AudioFile> {
 	
 	public boolean hasNext() {
 		return this.pos < this.audioFiles.size();
-		// return playList.getCurrent() < playList.size();
 	}
 
 	public AudioFile next() {
