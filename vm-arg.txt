@@ -1,0 +1,4 @@
+--module-path /Library/Java/JavaVirtualMachines/javafx-sdk-24/lib --add-modules javafx.controls
+
+
+--module-path /Library/Java/JavaVirtualMachines/javafx-sdk-24/lib --add-modules javafx.controls,javafx.fxml
